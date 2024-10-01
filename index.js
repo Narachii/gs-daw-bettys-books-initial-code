@@ -1,4 +1,4 @@
-// Added a comment
+// Modified a comment
 // Import express and ejs
 var express = require ('express') var ejs = require('ejs')
 
