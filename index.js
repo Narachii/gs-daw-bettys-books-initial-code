@@ -1,5 +1,6 @@
 // Modified a comment
 // Import express and ejs
+// Added comment!!
 var express = require ('express')
 var ejs = require('ejs')
 
@@ -22,7 +23,7 @@ app.use(express.static(__dirname + '/public'))
 
 // Define the database connection
 const db = mysql.createConnection ({
-    host: 'localhost',
+    host: 'db',
     user: 'bettys_books_app',
     password: 'qwertyuiop',
     database: 'bettys_books'
