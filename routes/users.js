@@ -4,6 +4,18 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
+// Lab3: session
+const redirectLogin = (req, res, next) => {
+  if (!req.session.userId ) {
+    // redirect to the login page
+    console.log("user does not have userId in session")
+    console.log("Session:", req.session)
+    res.redirect('./loggedin') 
+  } else {
+      console.log("user has userId in session")
+      next (); // move to the next middleware function
+  }
+}
 
 router.get('/register', function (req, res, next) {
     res.render('register.ejs')
@@ -48,26 +60,40 @@ router.post('/loggedin', function (req, res, next) {
         // TODO: Handle error
       }
       else if (result == true) {
-        // TODO: Send message
-            res.send('You succesfully loged in!')
+        // Save user session here, when login is successful
+        // Lab3: session
+        req.session.userId = req.body.username;
+        res.send('You succesfully loged in! <a href='+'../'+'>Home</a>')
       }
       else {
         // TODO: Send message
-            res.send('Check your passowrd and try again')
+        res.send('Check your passowrd and try again')
       }
     })
   })
 })
 
-router.get('/list', function(req, res, next) {
-    let sqlquery = "SELECT id, firstName,lastName,userName,email FROM users" // query database to get all the users
-    // execute sql query
-    db.query(sqlquery, (err, result) => {
-        if (err) {
-            next(err)
-        }
-        res.render("user_list.ejs", {users:result})
-     })
+
+router.get('/list', redirectLogin, function(req, res, next) {
+      console.log("SessionID:", req.session.userId)
+      let sqlquery = "SELECT id, firstName,lastName,userName,email FROM users" // query database to get all the users
+      // execute sql query
+      db.query(sqlquery, (err, result) => {
+          if (err) {
+              next(err)
+          }
+          res.render("user_list.ejs", {users:result})
+      })
+})
+
+// Lab3: session
+router.get('/logout', redirectLogin, (req,res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.redirect('./')
+    }
+    res.send('you are now logged out. <a href='+'../'+'>Home</a>');
+    })
 })
 
 // Export the router object so index.js can access it
