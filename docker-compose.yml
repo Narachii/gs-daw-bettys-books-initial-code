@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mysql
+    restart: always
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: "exit 0"
+  server:
+    build: .
+    ports:
+      - '8080:8000'
+    command: node index.js
+    depends_on:
+      db:
+        #condition: service_completed_successfully
+        condition: service_healthy
+
+# Names our volume
+#volumes:
+#  mysql_data:
